@@ -4,7 +4,7 @@
   "description": "None",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "NODE_ENV=production  node main.js"
   },
   "keywords": [
     "example",
