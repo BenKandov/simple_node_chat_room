@@ -4,7 +4,7 @@
   "description": "None",
   "main": "main.js",
   "scripts": {
-    "start: "echo \"Error: no test specified\" && exit 1"
+    "start: "node main"
   },
   "keywords": [
     "example",
