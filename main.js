@@ -1,7 +1,7 @@
 //Get required modules 
 //http for doing server stuff
 //fs for linking static files like my html 
-var http = require('http');=
+var http = require('http');
 var	fs = require('fs');
 var sanitize = require('validator');
 var port = process.env.PORT || 8888;
