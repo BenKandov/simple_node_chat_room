@@ -34,7 +34,8 @@
 
 	</body>
         <script type ="text/javascript">
-
+        //we'll make this some random rgb value that varies between clients
+        var client_name_color = null;
         	$(document).ready(function(){
         		var socketio = io.connect();
         		$("#message_div").hide();
@@ -47,7 +48,8 @@
         				var name = $("#name").val();
         				if(name != ""){
         					e.preventDefault();
-        					socketio.emit("join", name);
+        					//we're both able to tell the server our client has joined and to pass the session id to this variable
+        					var session_id = (socketio.emit("join", name)).id;
         					$("#name").detach();
         					$("#message_div").show();
         					$("#message_input").prop('disabled',false);
@@ -59,14 +61,14 @@
         		});
 
         		socketio.on("message_to_client", function(data){
-    				$("#chatlog").append("<hr/>" + data['message']);
+    				$("#chatlog").append("<hr/>" +   data['message']);
     				document.getElementById("chatlog").scrollTop = document.getElementById("chatlog").scrollHeight;
-    			
+
+ 
         		});
         		function sendMessage() {
    			 		var msg = document.getElementById("message_input").value;
     				socketio.emit("message_to_server", { message : msg});
-
 				}
 				$("#message_input").keypress(function(e){
 					if(e.which == 13){
@@ -80,7 +82,7 @@
 					$("#chatlog").append("<div class='server_message'> <hr/>"+msg + "</div>");
 				});
 
-				socketio.on("update-people", function(people){
+				socketio.on("update-people", function(people,colors){
 					$("#people_log").empty();
 					$.each(people, function(socketid, name){
 						
@@ -172,6 +174,7 @@
 			width:15%;
 
 		}
+
 
 		
 

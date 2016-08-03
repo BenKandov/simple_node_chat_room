@@ -26,23 +26,34 @@ var app = http.createServer(function(request, response){
 
 var io = require('socket.io').listen(app); //listen for our server configuration
 var people = {};
+var client_name_color = null;
+//we're gonna make an array to store name color for the various session ids
+var name_color = {};
 //socket.emit will update locally whereas io.sockets.emit will update across clients
 io.sockets.on('connection', function(socket){
 	socket.on("join", function(name){
 		people[socket.id] = name;
+
+		//
+		client_name_color = "rgb("+Math.floor(Math.random() * 155) + "," + Math.floor(Math.random() * 155)+ "," + Math.floor(Math.random() * 155) + ")";
+		//
+		name_color[socket.id] = client_name_color;
 		socket.emit("update", "Succesfully connected to server.");
-		io.sockets.emit("update", name + " has joined the chat.");
+		io.sockets.emit("update", "<b id='client_name_" +  socket.id.replace('/#', '')  + "'>" + name + " has joined the chat.");
 		io.sockets.emit("update-people", people);
+		socket.send(socket.id);//this should send our client's session id back to the client side 
+	
 	});
 	socket.on("disconnect", function(){
 		io.sockets.emit("update", people[socket.id] + " has left the chat.");
 		delete people[socket.id];
-		io.sockets.emit("update-people",people);
+		io.sockets.emit("update-people",people,name_color);
 	});
 	socket.on("message_to_server", function(data){
 		var escaped_message = sanitize.escape(data["message"]);
 		//This way we have sanitized our messages before adding them to our chatlog
-		io.sockets.emit("message_to_client", { message:  people[socket.id] +": " +escaped_message});
+		io.sockets.emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"</b> : " +escaped_message});
+		
 	});
 });
 
