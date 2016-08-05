@@ -5,6 +5,7 @@
 - Private Messaging
 - Group Messaging
 - Unique Colors for different users
+- Users can see who else is online
 
 ##Future functionality I may want
 
