@@ -90,12 +90,12 @@
 
 				socketio.on("update-people", function(data){
 					$("#people_log").empty();
-					var dropdown = document.getElementById("pm_dropdown");
-					var length = dropdown.options.length;
+					
 					//clear out dropdown for PMing and repopulate it 
-					for(i=0;i<length;i++){
-						dropdown.remove(i);
-					}
+					$("option").each(function(){
+						$(this).remove();
+					});
+
 					$("#pm_dropdown").append("<option value='nobody' selected='selected'> Select a person to PM  </option>");
 
 					var people = data['peep'];
@@ -103,8 +103,10 @@
 					var colors = data['colors'];
 					var color = null;
 					//repopulate dropdown PM and "who's online" dashboard
+
 					$.each(people, function(socketid, name){	
 						color = colors[socketid];
+						console.log(name);
 						$("#people_log").append("<b  style='color:"+ color  +"''> <br/> "+name + "</div>");
 						$("#pm_dropdown").append("<option value='"+name+"'> "+name + "</option>");
 					});

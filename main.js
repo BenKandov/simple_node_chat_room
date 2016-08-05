@@ -47,6 +47,7 @@ io.sockets.on('connection', function(socket){
 	socket.on("disconnect", function(){
 		io.sockets.emit("update", people[socket.id] + " has left the chat.");
 		delete people[socket.id];
+		delete name_color[socket.id]
 		io.sockets.emit("update-people",{peep:people,colors:name_color});
 	});
 	socket.on("message_to_server", function(data){
@@ -67,7 +68,7 @@ io.sockets.on('connection', function(socket){
 			console.log(id);
 			
 			io.sockets.sockets[id].emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"(Private Message)</b> : " +escaped_message});
-			io.sockets.sockets[socket.id].emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"(Private Message to) " + name + "</b> : " +escaped_message});
+			io.sockets.sockets[socket.id].emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"(Private Message to " + name + ")</b> : " +escaped_message});
 		}else{
 			io.sockets.emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"</b> : " +escaped_message});
 		}
