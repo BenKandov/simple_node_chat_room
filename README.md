@@ -2,9 +2,9 @@
 
 ##Current functionality
 
--Private Messaging
--Group Messaging
--Unique Colors for different users
+- Private Messaging
+- Group Messaging
+- Unique Colors for different users
 
 ##Future functionality I may want
 
