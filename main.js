@@ -35,24 +35,45 @@ io.sockets.on('connection', function(socket){
 		people[socket.id] = name;
 
 		//
-		client_name_color = "rgb("+Math.floor(Math.random() * 155) + "," + Math.floor(Math.random() * 155)+ "," + Math.floor(Math.random() * 155) + ")";
+		client_name_color = "rgb("+Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255)+ "," + Math.floor(Math.random() * 255) + ")";
 		//
 		name_color[socket.id] = client_name_color;
 		socket.emit("update", "Succesfully connected to server.");
 		io.sockets.emit("update", "<b id='client_name_" +  socket.id.replace('/#', '')  + "'>" + name + " has joined the chat.");
-		io.sockets.emit("update-people", people);
+		io.sockets.emit("update-people", {peep:people,colors:name_color});
 		socket.send(socket.id);//this should send our client's session id back to the client side 
 	
 	});
 	socket.on("disconnect", function(){
 		io.sockets.emit("update", people[socket.id] + " has left the chat.");
 		delete people[socket.id];
-		io.sockets.emit("update-people",people,name_color);
+		io.sockets.emit("update-people",{peep:people,colors:name_color});
 	});
 	socket.on("message_to_server", function(data){
-		var escaped_message = sanitize.escape(data["message"]);
 		//This way we have sanitized our messages before adding them to our chatlog
-		io.sockets.emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"</b> : " +escaped_message});
+		var escaped_message = sanitize.escape(data["message"]);
+		if(data['name'].valueOf().trim()!="Nobody" && data['name'].valueOf().trim()!="Select a person to PM"){
+		//	var id = people[data['name']];
+			var name = data['name'];
+
+			var id = null;
+			for(var socketid in people){
+				if(people[socketid].valueOf() == name.trim()){
+					id = socketid;
+			
+				}
+			}
+			//var id = 
+			console.log(id);
+			
+			io.sockets.sockets[id].emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"(Private Message)</b> : " +escaped_message});
+			io.sockets.sockets[socket.id].emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"(Private Message to) " + name + "</b> : " +escaped_message});
+		}else{
+			io.sockets.emit("message_to_client", {message: "<b style='color:"  + name_color[socket.id]  + "'>" + people[socket.id] +"</b> : " +escaped_message});
+		}
+		
+	
+	
 		
 	});
 });

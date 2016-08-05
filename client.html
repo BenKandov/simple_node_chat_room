@@ -23,10 +23,15 @@
  
 
 		<div class="message_div">
-			<input type="text" id="message_input"/>
-			
+			<input type="text" id="message_input"/>			
 		</div>
 		<div id="chatlog"></div>
+
+		<select id="pm_dropdown">
+			<option value="nobody" disabled="disabled" selected="selected"> Select a person to PM </option>
+			<option value="nobody">Nobody</option>
+		</select>
+
 		<div id="people_table">
 			<b id="title_who">Who's Online?</b>
 			<div id="people_log"> </div>
@@ -34,7 +39,6 @@
 
 	</body>
         <script type ="text/javascript">
-        //we'll make this some random rgb value that varies between clients
         var client_name_color = null;
         	$(document).ready(function(){
         		var socketio = io.connect();
@@ -68,7 +72,9 @@
         		});
         		function sendMessage() {
    			 		var msg = document.getElementById("message_input").value;
-    				socketio.emit("message_to_server", { message : msg});
+   			 		var pm_value = $("#pm_dropdown option:selected").text();
+
+    				socketio.emit("message_to_server", { message : msg, name :pm_value});
 				}
 				$("#message_input").keypress(function(e){
 					if(e.which == 13){
@@ -82,11 +88,25 @@
 					$("#chatlog").append("<div class='server_message'> <hr/>"+msg + "</div>");
 				});
 
-				socketio.on("update-people", function(people,colors){
+				socketio.on("update-people", function(data){
 					$("#people_log").empty();
-					$.each(people, function(socketid, name){
-						
-						$("#people_log").append("<div class='server_message'> <br/> "+name + "</div>");
+					var dropdown = document.getElementById("pm_dropdown");
+					var length = dropdown.options.length;
+					//clear out dropdown for PMing and repopulate it 
+					for(i=0;i<length;i++){
+						dropdown.remove(i);
+					}
+					$("#pm_dropdown").append("<option value='nobody' selected='selected'> Select a person to PM  </option>");
+
+					var people = data['peep'];
+
+					var colors = data['colors'];
+					var color = null;
+					//repopulate dropdown PM and "who's online" dashboard
+					$.each(people, function(socketid, name){	
+						color = colors[socketid];
+						$("#people_log").append("<b  style='color:"+ color  +"''> <br/> "+name + "</div>");
+						$("#pm_dropdown").append("<option value='"+name+"'> "+name + "</option>");
 					});
 				});
 
@@ -102,6 +122,23 @@
 
 		body{
 			background-color: #B7AFA3;
+		}
+		option{
+			background-color: #ACD1E9;
+			padding:30px;
+			text-align: center;
+			font-size: 14px;
+		}
+		#pm_dropdown{
+			font-size: 11px;
+			text-align: center;
+			position: absolute;
+			right: 3%;
+			bottom:5%;
+			background-color: #ACD1E9;
+			padding:10px;
+			width: 15%;
+			height: 10%;
 		}
 		#join_room{
 			font-size: 1.3em;
@@ -125,7 +162,7 @@
 			position: absolute;
 			top:10%;
 			border-width: 10px;
-			font-size: 20px;
+			font-size: 15px;
 			overflow:auto;
 			width:70%;
 			height:60%;
@@ -143,7 +180,7 @@
 		}
 		#message_input{
 
-			font-size: 18px;
+			font-size: 15px;
 			border-style: solid;
 			border-color: #ACD1E9;
 			overflow: auto;
