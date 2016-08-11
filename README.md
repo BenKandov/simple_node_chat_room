@@ -1,5 +1,8 @@
 # simple_node_chat_room
 
+Forget this app - all new updates in this repo: https://github.com/BenKandov/express_chat_server
+
+
 ##Current functionality
 
 - Private Messaging
